@@ -14,11 +14,23 @@ TRAIN_FOLDS = [1, 2, 3]
 VAL_FOLDS = [4]
 TEST_FOLDS = [5]
 
+# 5 grup klas ESC-50: numery klas 0-9, 10-19, 20-29, 30-39, 40-49
+GROUPS = ["Zwierzęta", "Natura i woda", "Dźwięki ludzkie", "Dom", "Miasto"]
+
+
+def split_name(fold):
+    """Nazwa zbioru dla numeru foldu."""
+    if fold in TRAIN_FOLDS:
+        return "trening"
+    return "walidacja" if fold in VAL_FOLDS else "test"
+
 
 def load_metadata():
     """Wczytuje esc50.csv i dodaje kolumnę z pełną ścieżką do pliku audio."""
     df = pd.read_csv(META_CSV)
     df["path"] = df["filename"].apply(lambda name: AUDIO_DIR / name)
+    df["group"] = df["target"].apply(lambda t: GROUPS[t // 10])
+    df["split"] = df["fold"].apply(split_name)
     return df
 
 

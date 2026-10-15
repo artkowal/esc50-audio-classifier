@@ -1,0 +1,51 @@
+target,category,group,trening,walidacja,test,razem,udzial_%
+0,dog,Zwierzęta,24,8,8,40,2.0
+1,rooster,Zwierzęta,24,8,8,40,2.0
+2,pig,Zwierzęta,24,8,8,40,2.0
+3,cow,Zwierzęta,24,8,8,40,2.0
+4,frog,Zwierzęta,24,8,8,40,2.0
+5,cat,Zwierzęta,24,8,8,40,2.0
+6,hen,Zwierzęta,24,8,8,40,2.0
+7,insects,Zwierzęta,24,8,8,40,2.0
+8,sheep,Zwierzęta,24,8,8,40,2.0
+9,crow,Zwierzęta,24,8,8,40,2.0
+10,rain,Natura i woda,24,8,8,40,2.0
+11,sea_waves,Natura i woda,24,8,8,40,2.0
+12,crackling_fire,Natura i woda,24,8,8,40,2.0
+13,crickets,Natura i woda,24,8,8,40,2.0
+14,chirping_birds,Natura i woda,24,8,8,40,2.0
+15,water_drops,Natura i woda,24,8,8,40,2.0
+16,wind,Natura i woda,24,8,8,40,2.0
+17,pouring_water,Natura i woda,24,8,8,40,2.0
+18,toilet_flush,Natura i woda,24,8,8,40,2.0
+19,thunderstorm,Natura i woda,24,8,8,40,2.0
+20,crying_baby,Dźwięki ludzkie,24,8,8,40,2.0
+21,sneezing,Dźwięki ludzkie,24,8,8,40,2.0
+22,clapping,Dźwięki ludzkie,24,8,8,40,2.0
+23,breathing,Dźwięki ludzkie,24,8,8,40,2.0
+24,coughing,Dźwięki ludzkie,24,8,8,40,2.0
+25,footsteps,Dźwięki ludzkie,24,8,8,40,2.0
+26,laughing,Dźwięki ludzkie,24,8,8,40,2.0
+27,brushing_teeth,Dźwięki ludzkie,24,8,8,40,2.0
+28,snoring,Dźwięki ludzkie,24,8,8,40,2.0
+29,drinking_sipping,Dźwięki ludzkie,24,8,8,40,2.0
+30,door_wood_knock,Dom,24,8,8,40,2.0
+31,mouse_click,Dom,24,8,8,40,2.0
+32,keyboard_typing,Dom,24,8,8,40,2.0
+33,door_wood_creaks,Dom,24,8,8,40,2.0
+34,can_opening,Dom,24,8,8,40,2.0
+35,washing_machine,Dom,24,8,8,40,2.0
+36,vacuum_cleaner,Dom,24,8,8,40,2.0
+37,clock_alarm,Dom,24,8,8,40,2.0
+38,clock_tick,Dom,24,8,8,40,2.0
+39,glass_breaking,Dom,24,8,8,40,2.0
+40,helicopter,Miasto,24,8,8,40,2.0
+41,chainsaw,Miasto,24,8,8,40,2.0
+42,siren,Miasto,24,8,8,40,2.0
+43,car_horn,Miasto,24,8,8,40,2.0
+44,engine,Miasto,24,8,8,40,2.0
+45,train,Miasto,24,8,8,40,2.0
+46,church_bells,Miasto,24,8,8,40,2.0
+47,airplane,Miasto,24,8,8,40,2.0
+48,fireworks,Miasto,24,8,8,40,2.0
+49,hand_saw,Miasto,24,8,8,40,2.0
