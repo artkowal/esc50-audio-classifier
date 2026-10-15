@@ -218,3 +218,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Dane: folder jest w repo (.gitkeep), jego zawartość nie
+data/*
+!data/.gitkeep
+
+# Konfiguracja IDE (lokalna)
+.idea/

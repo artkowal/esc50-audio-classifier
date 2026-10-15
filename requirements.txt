@@ -1,0 +1,27 @@
+# PyTorch z CUDA 12.8 (wymagane dla kart RTX 50xx)
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.11.0+cu128
+torchaudio==2.11.0+cu128
+
+# Obliczenia i dane
+numpy
+pandas
+scikit-learn
+
+# Dźwięk
+librosa
+soundfile
+
+# Wykresy i EDA
+matplotlib
+umap-learn
+
+# Wyjaśnialność (XAI)
+captum
+grad-cam
+
+# Aplikacja
+streamlit
+
+# Paski postępu
+tqdm
