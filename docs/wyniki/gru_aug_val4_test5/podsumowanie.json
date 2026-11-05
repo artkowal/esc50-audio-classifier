@@ -1,0 +1,26 @@
+{
+  "nazwa": "gru_aug_val4_test5",
+  "model": "gru",
+  "augmentacja": true,
+  "parametry": 382258,
+  "najlepsza_epoka": 67,
+  "liczba_epok": 87,
+  "val_loss": 1.409,
+  "val_acc": 0.5975,
+  "val_f1_macro": 0.5757,
+  "train_acc_w_najlepszej_epoce": 0.9139,
+  "sredni_czas_epoki_trening_s": 1.14,
+  "laczny_czas_s": 114.1,
+  "ustawienia": {
+    "model": "gru",
+    "epochs": 100,
+    "lr": 0.001,
+    "wd": 0.01,
+    "warmup": 5,
+    "patience": 20,
+    "val_fold": 4,
+    "test_fold": 5,
+    "augment": true,
+    "seed": 0
+  }
+}
