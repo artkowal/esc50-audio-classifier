@@ -9,6 +9,8 @@ Harmonogramy learning rate (--scheduler):
     cosine   rozgrzewka, potem spadek kosinusowy do 0 w ustalonej liczbie epok (tempo narzuca harmonogram)
     plateau  rozgrzewka, potem LR zmniejszany o połowę dopiero, gdy strata walidacyjna nie poprawia się
              przez --plateau-patience epok (ReduceLROnPlateau: każdy model uczy się we własnym tempie)
+    constant stały LR przez cały trening (opcjonalnie z rozgrzewką, jeśli --warmup > 0);
+             koniec treningu wyznacza Early Stopping
 
 Ustawienia (decyzja z 2026-10-22, opcja A), takie same dla obu modeli:
     CrossEntropyLoss, AdamW (lr 1e-3, weight decay 1e-2), batch 32, maks. 100 epok,
@@ -53,7 +55,7 @@ def parse_args():
     p.add_argument("--lr", type=float, default=1e-3)
     p.add_argument("--wd", type=float, default=1e-2, help="weight decay")
     p.add_argument("--warmup", type=int, default=5, help="liczba epok rozgrzewki learning rate")
-    p.add_argument("--scheduler", choices=["cosine", "plateau"], default="cosine")
+    p.add_argument("--scheduler", choices=["cosine", "plateau", "constant"], default="cosine")
     p.add_argument("--plateau-patience", type=int, default=5, help="plateau: epoki bez poprawy przed zmniejszeniem LR")
     p.add_argument("--patience", type=int, default=20, help="Early Stopping: epoki bez poprawy")
     p.add_argument("--val-fold", type=int, default=4)
@@ -156,6 +158,8 @@ if __name__ == "__main__":
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.wd)
     if args.scheduler == "cosine":
         scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, warmup_cosine(args.warmup, args.epochs))
+    elif args.scheduler == "constant":
+        scheduler = None                                       # stały LR: brak harmonogramu
     else:
         # Rozgrzewkę ustawiamy ręcznie, a po niej działa ReduceLROnPlateau (LR x 0.5 przy braku poprawy)
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
@@ -170,7 +174,7 @@ if __name__ == "__main__":
     t_start = time.perf_counter()
 
     for epoch in range(1, args.epochs + 1):
-        if args.scheduler == "plateau" and epoch <= args.warmup:      # rozgrzewka: liniowy wzrost LR
+        if args.scheduler != "cosine" and epoch <= args.warmup:      # rozgrzewka: liniowy wzrost LR
             for group in optimizer.param_groups:
                 group["lr"] = args.lr * epoch / args.warmup
         lr = optimizer.param_groups[0]["lr"]
@@ -180,7 +184,7 @@ if __name__ == "__main__":
         va = run_epoch(model, loaders["val"], loss_fn, device)
         if args.scheduler == "cosine":
             scheduler.step()                                   # aktualizacja learning rate po każdej epoce
-        elif epoch > args.warmup:
+        elif args.scheduler == "plateau" and epoch > args.warmup:
             scheduler.step(va["loss"])                         # plateau: reaguje na stratę walidacyjną
 
         history.append({"epoch": epoch, "lr": lr, "train_time_s": t_train,
