@@ -4,10 +4,11 @@ Czyta docs/wyniki/*/podsumowanie.json i historia.csv (tworzone przez trening.py)
 Wynik:
     docs/wyniki/zestawienie.md                         tabela do dokumentacji
     docs/figures/trening/porownanie_walidacja.png      accuracy i strata walidacyjna wszystkich eksperymentów
-Uruchomienie: python src/zestawienie.py [nazwa1 nazwa2 ...]   (bez nazw: wszystkie eksperymenty)
+Uruchomienie: python src/zestawienie.py [nazwa1 nazwa2 ...] [--wyjscie NAZWA]
+    bez nazw: wszystkie eksperymenty; --wyjscie: nazwa plików wynikowych (domyślnie porownanie_walidacja)
 """
+import argparse
 import json
-import sys
 
 import matplotlib
 
@@ -18,7 +19,7 @@ import pandas as pd
 from dane import ROOT
 
 RESULTS_DIR = ROOT / "docs" / "wyniki"
-FIG_PATH = ROOT / "docs" / "figures" / "trening" / "porownanie_walidacja.png"
+FIG_DIR = ROOT / "docs" / "figures" / "trening"
 COLORS = ["#2a78d6", "#eb6834", "#1baf7a"]          # maks. 3 serie na jednym wykresie (czytelność)
 INK, MUTED, GRID = "#0b0b0b", "#52514e", "#e4e3df"
 
@@ -71,9 +72,18 @@ def plot(histories, path):
 
 
 if __name__ == "__main__":
-    table, histories = load(sys.argv[1:])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("nazwy", nargs="*", help="nazwy eksperymentów (folderów w docs/wyniki)")
+    parser.add_argument("--wyjscie", default="porownanie_walidacja")
+    args = parser.parse_args()
+
+    table, histories = load(args.nazwy)
     md = to_markdown(table)
-    (RESULTS_DIR / "zestawienie.md").write_text("# Zestawienie treningów (walidacja)\n\n" + md + "\n")
-    plot(histories, FIG_PATH)
+    md_path = RESULTS_DIR / ("zestawienie.md" if args.wyjscie == "porownanie_walidacja" else f"{args.wyjscie}.md")
+    fig_path = FIG_DIR / f"{args.wyjscie}.png"
+    md_path.write_text("# Zestawienie treningów (walidacja)\n\n" + md + "\n")
+    if len(histories) > 3:
+        print("Uwaga: na wykresie pokazano tylko 3 pierwsze eksperymenty (czytelność).")
+    plot(histories, fig_path)
     print(md)
-    print(f"\nZapisano: {RESULTS_DIR / 'zestawienie.md'}\n          {FIG_PATH}")
+    print(f"\nZapisano: {md_path}\n          {fig_path}")

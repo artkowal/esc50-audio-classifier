@@ -2,8 +2,13 @@
 
 Przykłady:
     python src/trening.py --model cnn
-    python src/trening.py --model gru
+    python src/trening.py --model gru --lr 3e-4 --scheduler plateau
     python src/trening.py --model cnn --bez-augmentacji
+
+Harmonogramy learning rate (--scheduler):
+    cosine   rozgrzewka, potem spadek kosinusowy do 0 w ustalonej liczbie epok (tempo narzuca harmonogram)
+    plateau  rozgrzewka, potem LR zmniejszany o połowę dopiero, gdy strata walidacyjna nie poprawia się
+             przez --plateau-patience epok (ReduceLROnPlateau: każdy model uczy się we własnym tempie)
 
 Ustawienia (decyzja z 2026-10-22, opcja A), takie same dla obu modeli:
     CrossEntropyLoss, AdamW (lr 1e-3, weight decay 1e-2), batch 32, maks. 100 epok,
@@ -48,6 +53,8 @@ def parse_args():
     p.add_argument("--lr", type=float, default=1e-3)
     p.add_argument("--wd", type=float, default=1e-2, help="weight decay")
     p.add_argument("--warmup", type=int, default=5, help="liczba epok rozgrzewki learning rate")
+    p.add_argument("--scheduler", choices=["cosine", "plateau"], default="cosine")
+    p.add_argument("--plateau-patience", type=int, default=5, help="plateau: epoki bez poprawy przed zmniejszeniem LR")
     p.add_argument("--patience", type=int, default=20, help="Early Stopping: epoki bez poprawy")
     p.add_argument("--val-fold", type=int, default=4)
     p.add_argument("--test-fold", type=int, default=5)
@@ -136,7 +143,8 @@ if __name__ == "__main__":
     torch.backends.cudnn.benchmark = True            # stały rozmiar wejścia: cuDNN dobiera najszybsze algorytmy
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    name = args.nazwa or f"{args.model}_{'aug' if args.augment else 'bezaug'}_val{args.val_fold}_test{args.test_fold}"
+    name = args.nazwa or (f"{args.model}_{'aug' if args.augment else 'bezaug'}_lr{args.lr:g}_{args.scheduler}"
+                          f"_val{args.val_fold}_test{args.test_fold}")
     for d in (MODELS_DIR, RESULTS_DIR / name, FIG_DIR):
         d.mkdir(parents=True, exist_ok=True)
 
@@ -146,7 +154,12 @@ if __name__ == "__main__":
 
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.wd)
-    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, warmup_cosine(args.warmup, args.epochs))
+    if args.scheduler == "cosine":
+        scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, warmup_cosine(args.warmup, args.epochs))
+    else:
+        # Rozgrzewkę ustawiamy ręcznie, a po niej działa ReduceLROnPlateau (LR x 0.5 przy braku poprawy)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer, mode="min", factor=0.5, patience=args.plateau_patience, min_lr=1e-6)
 
     print(f"Eksperyment: {name} | urządzenie: {device} | parametry: {trainable:,}".replace(",", " "))
     print(f"Trening: {len(idx['train'])} nagrań (foldy bez {args.val_fold} i {args.test_fold}), "
@@ -157,12 +170,18 @@ if __name__ == "__main__":
     t_start = time.perf_counter()
 
     for epoch in range(1, args.epochs + 1):
+        if args.scheduler == "plateau" and epoch <= args.warmup:      # rozgrzewka: liniowy wzrost LR
+            for group in optimizer.param_groups:
+                group["lr"] = args.lr * epoch / args.warmup
         lr = optimizer.param_groups[0]["lr"]
         t0 = time.perf_counter()
         tr = run_epoch(model, loaders["train"], loss_fn, device, optimizer)
         t_train = time.perf_counter() - t0
         va = run_epoch(model, loaders["val"], loss_fn, device)
-        scheduler.step()                                       # aktualizacja learning rate po każdej epoce
+        if args.scheduler == "cosine":
+            scheduler.step()                                   # aktualizacja learning rate po każdej epoce
+        elif epoch > args.warmup:
+            scheduler.step(va["loss"])                         # plateau: reaguje na stratę walidacyjną
 
         history.append({"epoch": epoch, "lr": lr, "train_time_s": t_train,
                         **{f"train_{k}": v for k, v in tr.items()}, **{f"val_{k}": v for k, v in va.items()}})
