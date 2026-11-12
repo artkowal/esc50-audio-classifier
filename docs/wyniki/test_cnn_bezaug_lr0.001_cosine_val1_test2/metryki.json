@@ -1,0 +1,16 @@
+{
+  "accuracy": 0.725,
+  "precision_macro": 0.7341,
+  "recall_macro": 0.725,
+  "f1_macro": 0.7172,
+  "roc_auc_macro": 0.9825,
+  "pr_auc_macro": 0.8195,
+  "top3_accuracy": 0.895,
+  "czas_calkowity_s": 0.452,
+  "czas_na_nagranie_ms": 1.13,
+  "czas_na_batch_ms": 34.77,
+  "model": "cnn",
+  "parametry": 401650,
+  "checkpoint": "models/cnn_bezaug_lr0.001_cosine_val1_test2.pt",
+  "test_fold": 2
+}

@@ -1,0 +1,16 @@
+{
+  "accuracy": 0.605,
+  "precision_macro": 0.6064,
+  "recall_macro": 0.605,
+  "f1_macro": 0.5906,
+  "roc_auc_macro": 0.9761,
+  "pr_auc_macro": 0.6907,
+  "top3_accuracy": 0.8525,
+  "czas_calkowity_s": 0.259,
+  "czas_na_nagranie_ms": 0.648,
+  "czas_na_batch_ms": 19.95,
+  "model": "gru",
+  "parametry": 382258,
+  "checkpoint": "models/gru_aug_lr0.001_cosine_val3_test4.pt",
+  "test_fold": 4
+}
