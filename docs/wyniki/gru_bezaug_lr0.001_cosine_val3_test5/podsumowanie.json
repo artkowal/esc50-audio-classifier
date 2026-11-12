@@ -1,0 +1,30 @@
+{
+  "nazwa": "gru_bezaug_lr0.001_cosine_val3_test5",
+  "model": "gru",
+  "augmentacja": false,
+  "parametry": 382258,
+  "najlepsza_epoka": 39,
+  "liczba_epok": 59,
+  "val_loss": 1.5752,
+  "val_acc": 0.575,
+  "val_f1_macro": 0.5727,
+  "train_acc_w_najlepszej_epoce": 0.913,
+  "sredni_czas_epoki_trening_s": 1.13,
+  "laczny_czas_s": 77.7,
+  "ustawienia": {
+    "model": "gru",
+    "epochs": 100,
+    "lr": 0.001,
+    "wd": 0.01,
+    "warmup": 5,
+    "scheduler": "cosine",
+    "plateau_patience": 5,
+    "patience": 20,
+    "val_fold": 3,
+    "test_fold": 5,
+    "augment": false,
+    "dropout": 0.3,
+    "gru_dropout": 0.0,
+    "seed": 0
+  }
+}

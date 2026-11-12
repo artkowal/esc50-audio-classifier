@@ -60,15 +60,16 @@ def conv_block_1d(c_in, c_out, kernel, stride=1):
 
 
 class GRUModel(nn.Module):
-    def __init__(self, hidden=96, gru_layers=2, dropout=0.3):
+    def __init__(self, hidden=96, gru_layers=2, dropout=0.3, gru_dropout=0.0):
         super().__init__()
         self.blocks = nn.Sequential(
             conv_block_1d(1, 64, kernel=11, stride=5),   # 80 000 -> 16 000 -> pool -> 4000
             conv_block_1d(64, 128, kernel=3),            # 4000 -> 1000
             conv_block_1d(128, 128, kernel=3),           # 1000 -> 250 kroków po 20 ms
         )
+        # gru_dropout: dropout między warstwami GRU (tylko w treningu, nie zmienia liczby parametrów)
         self.gru = nn.GRU(input_size=128, hidden_size=hidden, num_layers=gru_layers,
-                          batch_first=True, bidirectional=True)
+                          batch_first=True, bidirectional=True, dropout=gru_dropout)
         self.head = nn.Sequential(nn.Dropout(dropout), nn.Linear(2 * hidden, N_CLASSES))
 
     def forward(self, wave):

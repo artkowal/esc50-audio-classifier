@@ -61,6 +61,8 @@ def parse_args():
     p.add_argument("--val-fold", type=int, default=4)
     p.add_argument("--test-fold", type=int, default=5)
     p.add_argument("--bez-augmentacji", dest="augment", action="store_false")
+    p.add_argument("--dropout", type=float, default=0.3, help="dropout przed ostatnią warstwą")
+    p.add_argument("--gru-dropout", type=float, default=0.0, help="GRU: dropout między warstwami GRU")
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--nazwa", default=None, help="nazwa eksperymentu (domyślnie z ustawień)")
     return p.parse_args()
@@ -68,7 +70,7 @@ def parse_args():
 
 def build_model(args, audio, idx, device):
     if args.model == "gru":
-        return GRUModel()
+        return GRUModel(dropout=args.dropout, gru_dropout=args.gru_dropout)
     path = stats_path(args.val_fold, args.test_fold)      # statystyki normalizacji z treningu tej iteracji
     if path.exists():
         stats = torch.load(path)
@@ -76,7 +78,7 @@ def build_model(args, audio, idx, device):
         mean, std = compute_mel_stats(audio, idx["train"], device)
         stats = {"mean": mean, "std": std}
         torch.save(stats, path)
-    return CNNModel(stats["mean"], stats["std"], use_specaug=args.augment)
+    return CNNModel(stats["mean"], stats["std"], dropout=args.dropout, use_specaug=args.augment)
 
 
 def warmup_cosine(warmup, epochs):
@@ -145,7 +147,8 @@ if __name__ == "__main__":
     torch.backends.cudnn.benchmark = True            # stały rozmiar wejścia: cuDNN dobiera najszybsze algorytmy
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    name = args.nazwa or (f"{args.model}_{'aug' if args.augment else 'bezaug'}_lr{args.lr:g}_{args.scheduler}"
+    extra = "" if (args.dropout == 0.3 and args.gru_dropout == 0.0) else f"_do{args.dropout:g}_gd{args.gru_dropout:g}"
+    name = args.nazwa or (f"{args.model}_{'aug' if args.augment else 'bezaug'}_lr{args.lr:g}_{args.scheduler}{extra}"
                           f"_val{args.val_fold}_test{args.test_fold}")
     for d in (MODELS_DIR, RESULTS_DIR / name, FIG_DIR):
         d.mkdir(parents=True, exist_ok=True)

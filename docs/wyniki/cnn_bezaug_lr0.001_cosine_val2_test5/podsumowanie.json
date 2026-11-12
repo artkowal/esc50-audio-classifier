@@ -1,0 +1,28 @@
+{
+  "nazwa": "cnn_bezaug_lr0.001_cosine_val2_test5",
+  "model": "cnn",
+  "augmentacja": false,
+  "parametry": 401650,
+  "najlepsza_epoka": 93,
+  "liczba_epok": 100,
+  "val_loss": 0.9712,
+  "val_acc": 0.73,
+  "val_f1_macro": 0.72,
+  "train_acc_w_najlepszej_epoce": 0.9451,
+  "sredni_czas_epoki_trening_s": 2.69,
+  "laczny_czas_s": 304.0,
+  "ustawienia": {
+    "model": "cnn",
+    "epochs": 100,
+    "lr": 0.001,
+    "wd": 0.01,
+    "warmup": 5,
+    "scheduler": "cosine",
+    "plateau_patience": 5,
+    "patience": 20,
+    "val_fold": 2,
+    "test_fold": 5,
+    "augment": false,
+    "seed": 0
+  }
+}
