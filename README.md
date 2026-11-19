@@ -13,6 +13,10 @@ Klasyfikacja 50 rodzajów dźwięków otoczenia ze zbioru [ESC-50](https://githu
 
 ## Uruchomienie
 
+```
+streamlit run src/app.py
+```
+
 ### Środowisko wirtualne
 
 Linux / macOS:
